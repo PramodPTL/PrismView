@@ -5,6 +5,7 @@ import TopBox from "../Components/TopBox";
 import Activities from "../Components/Activities";
 import TopProducts from "../Components/TopProducts";
 import AddProfile from "../Components/AddProfile";
+import BackendTest from "../Components/BackendTest";
 
 const HomePage = () => {
   return (
@@ -32,6 +33,11 @@ const HomePage = () => {
           <div className=" m-5 bg-gray-100 flex items-center ">
             <TopProducts />
             <AddProfile />
+          </div>
+
+          {/* Backend Connection Test */}
+          <div className="mx-5 mb-5">
+            <BackendTest />
           </div>
         </div>
       </div>
