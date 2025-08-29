@@ -1,18 +1,30 @@
-import React from "react";
+import React, { useState } from "react";
 import { Plus } from "lucide-react";
-
+import AddProfilePopup from "../Components/AddProfilePopup";
 
 export default function AddProfile() {
+  const [isPopupOpen, setIsPopupOpen] = useState(false);
 
   return (
-    <div className="bg-white rounded-2xl shadow-md flex flex-col items-center justify-center p-6 w-143 h-40 ml-5 mr-5 gap-6 cursor-pointer hover:shadow-lg transition max-w-5xl ">
-      {/* Plus Icon */}
-      <div className="w-15 h-15 flex items-center justify-center rounded-full border border-gray-100 text-gray-400 bg-gray-100">
-        <Plus size={40} />
+    <>
+      <div
+        onClick={() => setIsPopupOpen(true)}
+        className="bg-white rounded-2xl shadow-md flex flex-col items-center justify-center p-6 w-143 h-40 ml-5 mr-5 gap-6 cursor-pointer hover:shadow-lg transition max-w-5xl"
+      >
+        {/* Plus Icon */}
+        <div className="w-15 h-15 flex items-center justify-center rounded-full border border-gray-100 text-gray-400 bg-gray-100">
+          <Plus size={40} />
+        </div>
+
+        {/* Text */}
+        <p className="mt-3 text-sm text-gray-500 font-medium">Add Profile</p>
       </div>
 
-      {/* Text */}
-      <p className="mt-3 text-sm text-gray-500 font-medium">Add Profile</p>
-    </div>
+      {/* Add Profile Popup */}
+      <AddProfilePopup
+        isOpen={isPopupOpen}
+        onClose={() => setIsPopupOpen(false)}
+      />
+    </>
   );
 }
