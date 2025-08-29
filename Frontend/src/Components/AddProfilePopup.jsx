@@ -110,29 +110,31 @@ export default function AddProfilePopup({ isOpen, onClose }) {
           <div className="space-y-4">
             <div>
               <label className="block text-sm font-medium">
-                Enter Address*
+                Instagram Link <span className="text-gray-300">(Optional)</span>
               </label>
               <input
                 type="text"
                 name="address"
-                placeholder="Eg. 123 Main St"
+                placeholder="Eg...instagram.com/username"
                 value={formData.address}
                 onChange={handleChange}
                 className="w-full p-2 border rounded-lg mt-1"
               />
             </div>
             <div>
-              <label className="block text-sm font-medium">Enter City*</label>
+              <label className="block text-sm font-medium">
+                Youtube Link <span className="text-gray-300">(Optional)</span>
+              </label>
               <input
                 type="text"
                 name="city"
-                placeholder="Eg. New York"
+                placeholder="Eg...youtube/username"
                 value={formData.city}
                 onChange={handleChange}
                 className="w-full p-2 border rounded-lg mt-1"
               />
             </div>
-            <div className="flex justify-between">
+            <div className="flex justify-end gap-2">
               <button
                 onClick={() => setActiveTab("basic")}
                 className="px-4 py-2 rounded-lg border hover:bg-gray-100"
