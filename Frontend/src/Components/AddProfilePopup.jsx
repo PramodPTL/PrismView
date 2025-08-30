@@ -1,13 +1,16 @@
 import { useState } from "react";
+import { createProfile } from "../services/api";
 
-export default function AddProfilePopup({ isOpen, onClose }) {
+export default function AddProfilePopup({ isOpen, onClose, onProfileCreated }) {
   const [activeTab, setActiveTab] = useState("basic");
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState("");
   const [formData, setFormData] = useState({
     name: "",
     email: "",
     phone: "",
-    address: "",
-    city: "",
+    instagram: "",
+    youtube: "",
   });
 
   if (!isOpen) return null;
@@ -16,14 +19,50 @@ export default function AddProfilePopup({ isOpen, onClose }) {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
-  const handleSubmit = () => {
-    console.log("Profile Data:", formData);
-    onClose();
+  const handleSubmit = async () => {
+    try {
+      setIsLoading(true);
+      setError("");
+      
+      // Validate required fields
+      if (!formData.name.trim() || !formData.email.trim() || !formData.phone.trim()) {
+        setError("Name, email, and phone are required fields");
+        return;
+      }
+
+      // Create profile
+      const response = await createProfile(formData);
+      
+      if (response.success) {
+        // Reset form and close popup
+        setFormData({
+          name: "",
+          email: "",
+          phone: "",
+          instagram: "",
+          youtube: "",
+        });
+        setActiveTab("basic");
+        onClose();
+        
+        // Notify parent component to refresh profiles list
+        if (onProfileCreated) {
+          onProfileCreated();
+        }
+        
+        // You can add a success notification here
+        alert("Profile created successfully!");
+      }
+    } catch (error) {
+      setError(error.message || "Failed to create profile");
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   return (
     <div className="fixed inset-0 bg-opacity-20 flex justify-center items-center z-50">
-      <div className="bg-white rounded-2xl shadow-lg w-full max-w-lg p-6">
+      <div className="bg-white rounded-2xl  shadow-lg w-full max-w-lg p-6">
         {/* Header */}
         <div className="flex justify-between items-center mb-4">
           <h2 className="text-xl font-semibold">Add New Profile</h2>
@@ -59,6 +98,13 @@ export default function AddProfilePopup({ isOpen, onClose }) {
           </button>
         </div>
 
+        {/* Error Display */}
+        {error && (
+          <div className="mb-4 p-3 bg-red-100 border border-red-400 text-red-700 rounded-lg">
+            {error}
+          </div>
+        )}
+
         {/* Form Content */}
         {activeTab === "basic" && (
           <div className="space-y-4">
@@ -71,6 +117,7 @@ export default function AddProfilePopup({ isOpen, onClose }) {
                 value={formData.name}
                 onChange={handleChange}
                 className="w-full p-2 border rounded-lg mt-1"
+                required
               />
             </div>
             <div>
@@ -82,6 +129,7 @@ export default function AddProfilePopup({ isOpen, onClose }) {
                 value={formData.email}
                 onChange={handleChange}
                 className="w-full p-2 border rounded-lg mt-1"
+                required
               />
             </div>
             <div>
@@ -93,12 +141,14 @@ export default function AddProfilePopup({ isOpen, onClose }) {
                 value={formData.phone}
                 onChange={handleChange}
                 className="w-full p-2 border rounded-lg mt-1"
+                required
               />
             </div>
             <div className="flex justify-end">
               <button
                 onClick={() => setActiveTab("contact")}
                 className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700"
+                disabled={!formData.name.trim() || !formData.email.trim() || !formData.phone.trim()}
               >
                 Next
               </button>
@@ -114,9 +164,9 @@ export default function AddProfilePopup({ isOpen, onClose }) {
               </label>
               <input
                 type="text"
-                name="address"
+                name="instagram"
                 placeholder="Eg...instagram.com/username"
-                value={formData.address}
+                value={formData.instagram}
                 onChange={handleChange}
                 className="w-full p-2 border rounded-lg mt-1"
               />
@@ -127,9 +177,9 @@ export default function AddProfilePopup({ isOpen, onClose }) {
               </label>
               <input
                 type="text"
-                name="city"
+                name="youtube"
                 placeholder="Eg...youtube/username"
-                value={formData.city}
+                value={formData.youtube}
                 onChange={handleChange}
                 className="w-full p-2 border rounded-lg mt-1"
               />
@@ -138,14 +188,16 @@ export default function AddProfilePopup({ isOpen, onClose }) {
               <button
                 onClick={() => setActiveTab("basic")}
                 className="px-4 py-2 rounded-lg border hover:bg-gray-100"
+                disabled={isLoading}
               >
                 Back
               </button>
               <button
                 onClick={handleSubmit}
-                className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700"
+                className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 disabled:bg-blue-400"
+                disabled={isLoading}
               >
-                Save
+                {isLoading ? "Saving..." : "Save"}
               </button>
             </div>
           </div>

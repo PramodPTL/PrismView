@@ -1,5 +1,8 @@
 const express = require("express");
 const cors = require("cors");
+require("dotenv").config();
+const { testConnection, initDatabase } = require("./config/database");
+
 const app = express();
 const PORT = process.env.PORT || 5000;
 
@@ -12,6 +15,14 @@ app.use(
 );
 
 app.use(express.json());
+
+// Import routes
+const userRoutes = require("./routes/users");
+const profileRoutes = require("./routes/profiles");
+
+// Use routes
+app.use("/api/users", userRoutes);
+app.use("/api/profiles", profileRoutes);
 
 app.get("/", (req, res) => {
   res.send("Backend server is running!");
@@ -34,7 +45,11 @@ app.get("/api/users", (req, res) => {
   ]);
 });
 
-app.listen(PORT, () => {
-  console.log(`Server started on port ${PORT}`);
+app.listen(PORT, async () => {
+  console.log(`🚀 Server started on port ${PORT}`);
   console.log(`Frontend can connect at: http://localhost:${PORT}`);
+
+  // Initialize database
+  await testConnection();
+  await initDatabase();
 });

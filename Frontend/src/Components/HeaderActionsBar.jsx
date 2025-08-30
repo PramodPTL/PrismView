@@ -1,6 +1,34 @@
-import React from "react";
+import React, { useState, useEffect, useRef } from "react";
 
-const HeaderActionsBar = () => {
+const HeaderActionsBar = ({ onLogout }) => {
+  const [showProfileMenu, setShowProfileMenu] = useState(false);
+  const profileRef = useRef(null);
+
+  // Get user info from localStorage
+  const user = JSON.parse(localStorage.getItem("user") || "{}");
+
+  // Close profile menu when clicking outside or pressing ESC
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (profileRef.current && !profileRef.current.contains(event.target)) {
+        setShowProfileMenu(false);
+      }
+    };
+
+    const handleEscapeKey = (event) => {
+      if (event.key === "Escape") {
+        setShowProfileMenu(false);
+      }
+    };
+
+    document.addEventListener("mousedown", handleClickOutside);
+    document.addEventListener("keydown", handleEscapeKey);
+
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+      document.removeEventListener("keydown", handleEscapeKey);
+    };
+  }, []);
   return (
     <div className="flex items-center gap-6">
       {/* Search Bar */}
@@ -39,7 +67,6 @@ const HeaderActionsBar = () => {
         </span>
       </div>
 
-
       {/* Bell Icon */}
       <button className="relative p-2 rounded-full hover:bg-gray-200 transition">
         <svg
@@ -61,14 +88,43 @@ const HeaderActionsBar = () => {
         <span className="absolute top-1 right-1 block h-2 w-2 rounded-full bg-red-500"></span>
       </button>
       {/* Profile Dropdown */}
-      <div className="relative group">
-        <button className="flex items-center gap-2 focus:outline-none">
+      <div className="relative" ref={profileRef}>
+        <button
+          className="flex items-center gap-2 focus:outline-none"
+          onClick={() => setShowProfileMenu(!showProfileMenu)}
+        >
           <img
-            src="https://i.pravatar.cc/40"
+            src={user.picture || "https://i.pravatar.cc/40"}
             alt="Profile"
             className="w-9 h-9 rounded-full border-2 border-blue-400"
           />
+          <span className="text-sm font-medium text-gray-700">
+            {user.firstName || "User"}
+          </span>
         </button>
+
+        {/* Profile Menu Dropdown */}
+        {showProfileMenu && (
+          <div className="absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg py-1 z-50 border border-gray-200">
+            <div className="px-4 py-2 text-sm text-gray-700 border-b border-gray-100">
+              <div className="font-medium">
+                {user.firstName} {user.lastName}
+              </div>
+              <div className="text-gray-500">{user.email}</div>
+              {user.isGoogleUser && (
+                <div className="text-xs text-green-600 mt-1">
+                  ✓ Google Account
+                </div>
+              )}
+            </div>
+            <button
+              onClick={onLogout}
+              className="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 transition-colors"
+            >
+              Sign Out
+            </button>
+          </div>
+        )}
       </div>
     </div>
   );

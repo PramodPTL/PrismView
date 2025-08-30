@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { Plus } from "lucide-react";
 import AddProfilePopup from "../Components/AddProfilePopup";
 
-export default function AddProfile() {
+export default function AddProfile({ onProfileCreated }) {
   const [isPopupOpen, setIsPopupOpen] = useState(false);
 
   return (
@@ -24,6 +24,7 @@ export default function AddProfile() {
       <AddProfilePopup
         isOpen={isPopupOpen}
         onClose={() => setIsPopupOpen(false)}
+        onProfileCreated={onProfileCreated}
       />
     </>
   );
